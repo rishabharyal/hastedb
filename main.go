@@ -18,8 +18,9 @@ func NewResponse(status string, message string, action string) *Response {
     }
 }
 
-func (r *Response) Render() (string, error) {
-    return r.Status, nil
+func (r *Response) Render(){
+    // Write the byte back
+    println(r.Message)
 }
 
 func main() {
@@ -32,19 +33,30 @@ func main() {
 
     request_parser := parser.NewRequest(requestString);
 
-    connection_data, err := request_parser.Parse();
+    connection_type, err := request_parser.Parse();
     if err != nil {
         response := NewResponse("ERROR", err.Error(), "PARSE")
         response.Render()
         return
     }
 
-    println(connection_data)
-
-
-    
-
-
-
-
+    switch connection_type {
+        case "CONNECT":
+            conn_parser := request_parser.GetParser();
+            if connection_data, ok := conn_parser.GetParsedData().(parser.ConnectionData); ok {
+                println(connection_data.User)
+                println(connection_data.Pass)
+                // we will handle the connection here...
+            }
+        case "DISCONNECT":
+            conn_parser := request_parser.GetParser();
+            if connection_data, ok := conn_parser.GetParsedData().(parser.DisconnectData); ok {
+                println(connection_data.Token)
+            }
+        case "QUERY":
+            conn_parser := request_parser.GetParser();
+            if connection_data, ok := conn_parser.GetParsedData().(parser.QueryData); ok {
+                println(connection_data.Query)
+            }
+    }
 }
