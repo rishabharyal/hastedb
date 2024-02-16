@@ -26,10 +26,17 @@ func (r *Response) Render(){
 func main() {
 
     requestString := 
-    `CONNECT
+    `QUERY
 
-    USER: admin
-    PASS: password`
+TOKEN: d6t243fbhmwtdg86y3wp77qrj
+
+TYPE: SELECT
+
+Select * from users WHERE id = ? AND email = ?;
+
+0 => 1
+1 = "rishabh@gmail.com
+`
 
     request_parser := parser.NewRequest(requestString);
 
@@ -56,7 +63,7 @@ func main() {
         case "QUERY":
             conn_parser := request_parser.GetParser();
             if connection_data, ok := conn_parser.GetParsedData().(parser.QueryData); ok {
-                println(connection_data.Query)
+                println(connection_data.Bindings)
             }
     }
 }
