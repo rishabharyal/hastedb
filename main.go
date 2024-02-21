@@ -63,7 +63,8 @@ Select * from users WHERE id = ? AND email = ?;
         case "QUERY":
             conn_parser := request_parser.GetParser();
             if connection_data, ok := conn_parser.GetParsedData().(parser.QueryData); ok {
-                println(connection_data.Bindings)
+                queryParser := parser.NewQueryParser(connection_data.Query);
+                queryParser.Parse();
             }
     }
 }

@@ -54,6 +54,7 @@ type Lexer struct {
     Tokens []Token
     chars []string
     isString bool
+    currentTokenString string
 }
 
 func NewLexer(source string) *Lexer {
@@ -72,18 +73,19 @@ func (l *Lexer) Tokenize() {
 
     for l.Position < len(l.chars) {
         l.CurrentChar = l.chars[l.Position]
+        println(l.CurrentChar)
         // if the instance in a string, any character is candidate for a string literal
         if l.isString {
             if l.CurrentChar != "\"" {
                 // Add the current character to the chars array
-                l.chars = append(l.chars, l.CurrentChar)
+                l.currentTokenString += l.CurrentChar
                 l.Position++
                 continue
             }
         } else {
             // Sinc this is already a string, and we also got a closing double quote, we can add the string to the tokens array
-            l.Tokens = append(l.Tokens, Token{Token: strings.Join(l.chars, ""), Type: "string"})
-            l.chars = []string{}
+            l.Tokens = append(l.Tokens, Token{Token: l.currentTokenString, Type: "string"})
+            l.currentTokenString = ""
             l.isString = false
             l.Position++
             continue
@@ -97,12 +99,12 @@ func (l *Lexer) Tokenize() {
         // if the current character is a space, we need to save current token and reset the chars array
         if l.CurrentChar == " " {
             l.HandleToken()
-            l.chars = []string{}
+            l.currentTokenString = ""
             l.Position++
             continue
         }
 
-        l.chars = append(l.chars, l.CurrentChar)
+        l.currentTokenString += l.CurrentChar
         l.Position++
 
     }
