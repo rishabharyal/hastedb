@@ -15,5 +15,9 @@ func NewQueryParser(queryString string) *QueryParser {
 func (q *QueryParser) Parse() error {
     lexer := core.NewLexer(q.queryString)
     lexer.Tokenize()
+    tokens := lexer.GetTokens()
+    for _, token := range tokens {
+        println(token)
+    }
     return nil
 }

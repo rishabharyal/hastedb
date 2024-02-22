@@ -2,6 +2,7 @@ package core
 
 import (
     "strings"
+    "strconv"
 )
 
 
@@ -43,7 +44,7 @@ var TOKEN_TYPES = map[string]string{
 }
 
 type Token struct {
-    Token string
+    Value string
     Type string
 }
 
@@ -54,6 +55,8 @@ type Lexer struct {
     Tokens []Token
     chars []string
     isString bool
+    isNumber bool
+    isFloat bool
     currentTokenString string
 }
 
@@ -84,7 +87,7 @@ func (l *Lexer) Tokenize() {
             }
         } else {
             // Sinc this is already a string, and we also got a closing double quote, we can add the string to the tokens array
-            l.Tokens = append(l.Tokens, Token{Token: l.currentTokenString, Type: "string"})
+            l.Tokens = append(l.Tokens, Token{Value: l.currentTokenString, Type: "string"})
             l.currentTokenString = ""
             l.isString = false
             l.Position++
@@ -95,6 +98,7 @@ func (l *Lexer) Tokenize() {
             l.Position++
             continue
         }
+        
 
         // if the current character is a space, we need to save current token and reset the chars array
         if l.CurrentChar == " " {
@@ -104,12 +108,46 @@ func (l *Lexer) Tokenize() {
             continue
         }
 
+        if l.isNumber {
+            if l.CurrentChar == "." {
+                if l.isFloat {
+                    // Its already a float, so we need to throw error
+                    println("Error: Invalid float")
+                    return
+                }
+                l.isFloat = true
+            } else if !isStringANumber(l.currentTokenString) {
+                // Its not a valid number, so we need to throw error
+                println("Error: Invalid number")
+                return
+            }
+            l.currentTokenString += l.CurrentChar
+            l.Position++
+            continue
+        }
+
         l.currentTokenString += l.CurrentChar
+        
+        if isStringANumber(l.currentTokenString) {
+            l.isNumber = true 
+        }
+
         l.Position++
 
     }
     
 
+}
+
+func isStringANumber(s string) bool {
+    // Try to convert the string to a float64.
+    // The function returns an error if the conversion fails.
+    _, err := strconv.ParseFloat(s, 64)
+    return err == nil
+}
+
+func (l *Lexer) GetTokens() []Token {
+    return l.Tokens
 }
 
 func (l *Lexer) HandleToken() {
