@@ -17,7 +17,7 @@ func (q *QueryParser) Parse() error {
     lexer.Tokenize()
     tokens := lexer.GetTokens()
     for _, token := range tokens {
-        println(token)
+        println(token.Value + " type: " + token.Type)
     }
     return nil
 }
