@@ -64,7 +64,7 @@ var OPERATORS = map[string]string{
     ".": "DOT",
     ";": "SEMICOLON",
     ":": "COLON",
-    "?": "QUESTIONMARK",
+    "?": "WILDCARD",
 }
 
 type Token struct {
@@ -189,8 +189,6 @@ func (l *Lexer) Tokenize() {
 }
 
 func isStringANumber(s string) bool {
-    // Try to convert the string to a float64.
-    // The function returns an error if the conversion fails.
     _, err := strconv.ParseFloat(s, 64)
     return err == nil
 }
@@ -239,7 +237,7 @@ func (l *Lexer) HandleToken() error {
         return nil
     }
 
-    l.Tokens = append(l.Tokens, Token{Value: l.currentTokenString, Type: "DENTIFIER"})
+    l.Tokens = append(l.Tokens, Token{Value: l.currentTokenString, Type: "IDENTIFIER"})
 
     return nil 
 }

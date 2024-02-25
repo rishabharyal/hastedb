@@ -32,7 +32,7 @@ TOKEN: d6t243fbhmwtdg86y3wp77qrj
 
 TYPE: SELECT
 
-Select * from users WHERE id = ? AND email = ?;
+CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) NOT NULL, password VARCHAR(255) NOT NULL,email VARCHAR(100) NOT NULL);
 
 0 => 1
 1 = "rishabh@gmail.com
