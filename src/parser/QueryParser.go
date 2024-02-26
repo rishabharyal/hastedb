@@ -16,8 +16,11 @@ func (q *QueryParser) Parse() error {
     lexer := core.NewLexer(q.queryString)
     lexer.Tokenize()
     tokens := lexer.GetTokens()
-    for _, token := range tokens {
-        println(token.Value + " type: " + token.Type)
+    semanticAnalyzer := core.NewSemanticAnalyzer(tokens)
+    statement, err := semanticAnalyzer.Analyze()
+    if err != nil {
+        return err
     }
+    println(statement.Type)
     return nil
 }

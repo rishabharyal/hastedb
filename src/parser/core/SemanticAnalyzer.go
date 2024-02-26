@@ -51,6 +51,12 @@ func (sa *SemanticAnalyzer) Analyze() (Statement, error) {
 
 }
 
+func (sa *SemanticAnalyzer) analyzeCreate() (Statement, error) {
+    var result Statement
+    result.Type = "CREATE"
+    return result, nil
+}
+
 func (sa *SemanticAnalyzer) analyzeGet() (Statement, error) {
     var result Statement
     result.Type = "GET"
@@ -63,11 +69,6 @@ func (sa *SemanticAnalyzer) analyzeSet() (Statement, error) {
     return result, nil
 }
 
-func (sa *SemanticAnalyzer) analyzeCreate() (Statement, error) {
-    var result Statement
-    result.Type = "CREATE"
-    return result, nil
-}
 
 func (sa *SemanticAnalyzer) analyzeDrop() (Statement, error) {
     var result Statement
