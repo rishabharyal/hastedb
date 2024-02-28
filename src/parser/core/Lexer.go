@@ -45,7 +45,7 @@ var TOKEN_TYPES = map[string]string{
 }
 
 var OPERATORS = map[string]string{
-    "=": "EQUAL",
+    "=": "ASSIGN",
     "!=": "NOTEQUAL",
     ">": "GREATERTHAN",
     "<": "LESSTHAN",
@@ -107,7 +107,7 @@ func (l *Lexer) Tokenize() {
                 l.currentTokenString += l.CurrentChar
             } else {
                 // Sinc this is already a string, and we also got a closing double quote, we can add the string to the tokens array
-                l.Tokens = append(l.Tokens, Token{Value: l.currentTokenString, Type: "string"})
+                l.Tokens = append(l.Tokens, Token{Value: l.currentTokenString, Type: "STRING"})
                 l.currentTokenString = ""
                 l.isString = false
             }

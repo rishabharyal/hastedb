@@ -19,6 +19,7 @@ func (q *QueryParser) Parse() error {
     semanticAnalyzer := core.NewSemanticAnalyzer(tokens)
     statement, err := semanticAnalyzer.Analyze()
     if err != nil {
+        println(err.Error())
         return err
     }
     println(statement.Type)

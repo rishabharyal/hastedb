@@ -1,5 +1,7 @@
 package core
 
+import "errors"
+
 type SemanticAnalyzer struct {
     tokens []Token
 }
@@ -10,10 +12,22 @@ func NewSemanticAnalyzer(tokens []Token) *SemanticAnalyzer {
 
 type Statement struct {
     Type string
+    TableStatement TableStatement
+    KVStatement KVStatement
+}
+
+type TableStatement struct {
+    Type string
     Table string
     Columns []string
     Values []string
     Where string
+}
+
+type KVStatement struct {
+    Type string
+    Key string
+    Value string
 }
 
 func (sa *SemanticAnalyzer) Analyze() (Statement, error) {
@@ -60,13 +74,43 @@ func (sa *SemanticAnalyzer) analyzeCreate() (Statement, error) {
 func (sa *SemanticAnalyzer) analyzeGet() (Statement, error) {
     var result Statement
     result.Type = "GET"
-    return result, nil
+    kvs := KVStatement{Type: "GET"}
+    i := 1
+    for i < len(sa.tokens) {
+        if sa.tokens[i].Type == "IDENTIFIER" {
+            kvs.Key = sa.tokens[i].Value
+            result.KVStatement = kvs
+            return result, nil
+        }
+        return result, errors.New("unknown_key_at_key_position")
+    }
+    return result, errors.New("unknown_key_at_key_position")
 }
 
 func (sa *SemanticAnalyzer) analyzeSet() (Statement, error) {
     var result Statement
     result.Type = "SET"
-    return result, nil
+    kvs := KVStatement{Type: "SET"}
+    i := 1
+    for i < len(sa.tokens) {
+        if sa.tokens[i].Type == "IDENTIFIER" {
+            kvs.Key = sa.tokens[i].Value
+            if sa.tokens[i+1].Type == "ASSIGN" {
+                kvs.Value = sa.tokens[i+2].Value
+                if sa.tokens[i+2].Type == "STRING" {
+                    kvs.Value = sa.tokens[i+2].Value
+                    result.KVStatement = kvs
+                    return result, nil
+                }
+                // return error
+                println(sa.tokens[i+2].Type)
+                return result, errors.New("unknown_value_at_value_position")
+            }
+            return result, errors.New("unknown_value_at_assign_position")
+        }
+        return result, errors.New("unknown_key_at_key_position")
+    }
+    return result, errors.New("unknown_key_at_key_position")
 }
 
 
