@@ -30,6 +30,7 @@ var TOKEN_TYPES = map[string]string{
     "VALUES": "VALUES",
     "UPDATE": "UPDATE",
     "SET": "SET",
+    "GET": "GET",
     "DELETE": "DELETE",
     "CREATE": "CREATE",
     "TABLE": "TABLE",

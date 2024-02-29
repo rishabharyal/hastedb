@@ -14,6 +14,7 @@ type Statement struct {
     Type string
     TableStatement TableStatement
     KVStatement KVStatement
+    TableDDLStatement TableDDLStatement
 }
 
 type TableStatement struct {
@@ -23,6 +24,14 @@ type TableStatement struct {
     Values []string
     Where string
 }
+
+type TableDDLStatement struct {
+    Type string
+    Table string
+    Columns []string
+    Constraints []string
+}
+
 
 type KVStatement struct {
     Type string
@@ -54,7 +63,7 @@ func (sa *SemanticAnalyzer) Analyze() (Statement, error) {
         case "GET":
             result, err = sa.analyzeGet()
         default:
-            panic("Invalid SQL statement")
+            panic("unsupported_query")
     }
 
     if err != nil {
@@ -68,13 +77,53 @@ func (sa *SemanticAnalyzer) Analyze() (Statement, error) {
 func (sa *SemanticAnalyzer) analyzeCreate() (Statement, error) {
     var result Statement
     result.Type = "CREATE"
+    TableStatement := TableDDLStatement{Type: "CREATE"}
+    i := 1
+    if sa.tokens[i].Type != "TABLE" {
+        return result, errors.New("unknown_entity_expected_table")
+    }
+
+    i++
+
+    if !(sa.tokens[i].Type == "IDENTIFIER" || sa.tokens[i].Type == "STRING") {
+        return result, errors.New("table_name_unspecified")
+    }
+
+    TableStatement.Table = sa.tokens[i].Value
+    i++
+
+    if sa.tokens[i].Type != "LEFTPARENTHESIS" {
+        return result, errors.New("unknown_entity_expected_left_parenthesis")
+    }
+
+    i++
+
+    // Here we need to handle the columns, their types and other traits
+    for i < len(sa.tokens) {
+        if sa.tokens[i].Type == "RIGHTPARENTHESIS" {
+            break
+        }
+        if !(sa.tokens[i].Type == "IDENTIFIER" || sa.tokens[i].Type == "STRING") {
+            return result, errors.New("unknown_column_name")
+        }
+
+        column := sa.tokens[i].Value
+        i++
+
+
+    }
+
     return result, nil
+
 }
 
 func (sa *SemanticAnalyzer) analyzeGet() (Statement, error) {
     var result Statement
     result.Type = "GET"
     kvs := KVStatement{Type: "GET"}
+    if len(sa.tokens) != 2 {
+        return result, errors.New("invalid_get_statement")
+    }
     i := 1
     for i < len(sa.tokens) {
         if sa.tokens[i].Type == "IDENTIFIER" {
@@ -90,6 +139,9 @@ func (sa *SemanticAnalyzer) analyzeGet() (Statement, error) {
 func (sa *SemanticAnalyzer) analyzeSet() (Statement, error) {
     var result Statement
     result.Type = "SET"
+    if len(sa.tokens) < 3 {
+        return result, errors.New("invalid_set_statement")
+    }
     kvs := KVStatement{Type: "SET"}
     i := 1
     for i < len(sa.tokens) {

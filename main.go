@@ -30,9 +30,9 @@ func main() {
 
 TOKEN: d6t243fbhmwtdg86y3wp77qrj
 
-TYPE: SET
+TYPE: GET
 
-SET aryal= "Rishabh"
+GET aryal
 
 0 => 1
 1 = "rishabh@gmail.com
