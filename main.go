@@ -30,9 +30,13 @@ func main() {
 
 TOKEN: d6t243fbhmwtdg86y3wp77qrj
 
-TYPE: GET
+TYPE: CREATE
 
-GET aryal
+CREATE TABLE users (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255)
+);
 
 0 => 1
 1 = "rishabh@gmail.com
