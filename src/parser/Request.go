@@ -1,53 +1,53 @@
 package parser
 
 import (
-	"errors"
-	"strings"
+  "errors"
+  "strings"
 )
 
 type Parser interface {
-    Parse() error
-    GetParsedData() interface{}
+  Parse() error
+  GetParsedData() interface{}
 }
 
 type Request struct {
-    query string
-    parser Parser
+  query string
+  parser Parser
 }
 
 func NewRequest(query string) *Request {
-    return &Request{
-        query: query,
-    }
+  return &Request{
+    query: query,
+  }
 }
 
 func (r *Request) Parse() (string, error) {
-    split := strings.Split(r.query, "\n");
-    REQ_TYPE := split[0]
+  split := strings.SplitN(r.query, "\n", 1)
+  REQ_TYPE := split[0]
 
-    var parser Parser
-    
-    switch REQ_TYPE {
-        case "CONNECT":
-            parser = NewRequestConnection(split)
-        case "DISCONNECT":
-            parser = NewRequestDisconnect(split)
-        case "QUERY":
-            parser = NewRequestQuery(split)
-        default:
-            return "", errors.New("Invalid request type")
-    }
+  var parser Parser
 
-    error := parser.Parse()
-    if error != nil {
-        return "", error
-    }
+  switch REQ_TYPE {
+  case "CONNECT":
+    parser = NewRequestConnection(split[1])
+  case "DISCONNECT":
+    parser = NewRequestDisconnect(split[1])
+  case "QUERY":
+    parser = NewRequestQuery(split[1])
+  default:
+    return "", errors.New("Invalid request type")
+  }
 
-    r.parser = parser
+  error := parser.Parse()
+  if error != nil {
+    return "", error
+  }
 
-    return REQ_TYPE, error
+  r.parser = parser
+
+  return REQ_TYPE, error
 }
 
 func (r *Request) GetParser() Parser {
-    return r.parser
+  return r.parser
 }
